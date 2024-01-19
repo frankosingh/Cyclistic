@@ -1,7 +1,5 @@
 # Cyclistic
 Google Data Analytics Capstone Project
-# Cyclistic
-Google Data Analytics Capstone Project
 library(tidyverse) 
 library(lubridate)
 library(moments)  # for skewness and kurtosis
@@ -295,5 +293,326 @@ ggplot(combined_data, aes(x = start_hour)) +
   theme_minimal() +
   labs(title = "Number of Rides per Hour", x = "Hour of the Day", y = "Number of Rides")
 
+#Analyze
+#Goal: Use data to extract valuable patterns or findings that can inform decision-making and achieve positive outcomes
+
+usercount <- BikeShare %>%
+  group_by(user) %>%
+  summarize(total = n()) %>%
+  mutate(overall_total = sum(total)) %>%
+  group_by(user) %>%
+  summarize(percent_total = total / overall_total)
+
+bike_usage <- BikeShare %>%
+  group_by(bike) %>%
+  summarize(total = n()) %>%
+  mutate(overall_total = sum(total)) %>%
+  group_by(bike) %>%
+  summarize(percent_total = total / overall_total)
+
+bike_usage
+A tibble: 3 × 2
+bike	percent_total
+<chr>	<dbl>
+classic_bike	0.69849453
+docked_bike	0.06539499
+electric_bike	0.23611048
+
+casual_member_biketype_used <- BikeShare %>%
+    filter(user == "casual") %>%
+    group_by(bike) %>%
+    summarize(total = n()) %>%
+    mutate(percent_casual = total / sum(total))
+
+casual_member_biketype_used
+A tibble: 3 × 3
+bike	total	percent_casual
+<chr>	<int>	<dbl>
+classic_bike	1252609	0.6127208
+docked_bike	303524	0.1484705
+electric_bike	488206	0.2388087
+annual_member_biketype_used <- BikeShare %>%
+  filter(user == "member") %>%
+  group_by(bike) %>%
+  summarize(total = n()) %>%
+  mutate(overall_total = sum(total)) %>%
+  mutate(percent_member = total / overall_total)
+
+annual_member_biketype_used
+A tibble: 2 × 4
+bike	total	overall_total	percent_member
+<chr>	<int>	<int>	<dbl>
+classic_bike	1989380	2597056	0.7660135
+electric_bike	607676	2597056	0.2339865
+riders_time_user <- BikeShare %>%
+  group_by(user) %>%
+  summarize(avg_time = mean(ride_length), .groups = "drop")
+
+riders_time_user$avg_time <- round(riders_time_user$avg_time, digits = 0)
+
+riders_time_user
+A tibble: 2 × 2
+user	avg_time
+<chr>	<dbl>
+casual	32
+member	13
+riders_time_biketypes <- BikeShare %>%
+  group_by(bike, user) %>%
+  summarize(avg_time = mean(ride_length), .groups = "drop")
+
+riders_time_biketypes$avg_time <- round(riders_time_biketypes$avg_time, digits = 0)
+
+riders_time_biketypes
+A tibble: 5 × 3
+bike	user	avg_time
+<chr>	<chr>	<dbl>
+classic_bike	casual	26
+classic_bike	member	13
+docked_bike	casual	77
+electric_bike	casual	20
+electric_bike	member	12
+Average ride time by user
+avgridetime <- BikeShare %>%
+  group_by(user) %>%
+  summarise(avgtime = mean(ride_length))
+
+avgridetime$avgtime <- round(avgridetime$avgtime, digits = 0)
+
+avgridetime
+A tibble: 2 × 2
+user	avgtime
+<chr>	<dbl>
+casual	32
+member	13
+Rides by user, hour
+hour <- BikeShare %>%
+  group_by(user, hour) %>% 
+  summarise(numberofrides = n(), .groups = 'drop') %>% 
+  arrange(hour)
+
+hour
+A tibble: 48 × 3
+user	hour	numberofrides
+<chr>	<chr>	<int>
+casual	00	47202
+member	00	28294
+casual	01	34741
+member	01	18008
+casual	02	24616
+member	02	10949
+casual	03	13144
+member	03	5756
+casual	04	8058
+member	04	5656
+casual	05	8214
+member	05	21826
+casual	06	16972
+member	06	63550
+casual	07	31640
+member	07	123805
+casual	08	45819
+member	08	161308
+casual	09	51651
+member	09	117483
+casual	10	70508
+member	10	104194
+casual	11	97063
+member	11	121657
+casual	12	122945
+member	12	145901
+casual	13	134890
+member	13	144421
+casual	14	142482
+member	14	141319
+casual	15	151146
+member	15	160346
+casual	16	164706
+member	16	208444
+casual	17	192268
+member	17	275253
+casual	18	188556
+member	18	245403
+casual	19	151357
+member	19	178910
+casual	20	110876
+member	20	119798
+casual	21	88735
+member	21	85576
+casual	22	80822
+member	22	64619
+casual	23	65928
+member	23	44580
+Creation of trip count table by day of the week and user type
+dayofweek <- BikeShare %>%
+  group_by(user, day_of_week) %>%
+  summarise(numberofrides = n(), .groups = "drop")
+view(dayofweek)
+Creation of trip count table by user and month
+month <- BikeShare %>%
+  group_by(user, month) %>%
+  summarise(numberofrides = n(), .groups = "drop")
+Removing rows with missing values in the month column
+month <- na.omit(month)
+Cleaned table view
+month
+A tibble: 24 × 3
+user	month	numberofrides
+<chr>	<ord>	<int>
+casual	Jan	12605
+casual	Feb	15144
+casual	Mar	67156
+casual	Apr	120420
+casual	May	216829
+casual	Jun	304192
+casual	Jul	369415
+casual	Aug	341476
+casual	Sep	292931
+casual	Oct	189117
+casual	Nov	69978
+casual	Dec	45076
+member	Jan	67523
+member	Feb	74034
+member	Mar	148827
+member	Apr	177787
+member	May	234165
+member	Jun	304586
+member	Jul	322906
+member	Aug	332933
+member	Sep	328219
+member	Oct	288855
+member	Nov	185926
+member	Dec	131295
+Example data
+data <- data.frame(
+  tipo_rider = c("casual", "member", "casual", "member", "casual"),
+  count = c(15, 25, 10, 35, 20)
+)
+ggplot(data, aes(x = tipo_rider, y = count, fill = tipo_rider)) +
+  geom_col() +
+  labs(x = "Tipo Rider", y = "Conteggio") +
+  scale_fill_manual(values = c("cadetblue1", "cornflowerblue"))
+No description has been provided for this image
+Primary Goal
+Utilize data visualization techniques to effectively communicate insights and trends derived from the data analysis to
+
+Relevant Stakeholders. By presenting the information in a visually compelling and easily understandable format, the objective is to
+
+Facilitate Informed decision-making and foster productive discussions among stakeholders
+
+# Chunk 1
+options(repr.plot.width = 10, repr.plot.height = 6)
+
+ggplot(bike_usage, aes(x = bike, y = percent_total, fill = "#91d8e0")) + 
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = scales::percent(percent_total)), vjust = 1.35, size = 8, fontface = "bold", color = "grey20") + 
+  labs(title = "Percentage of bike-used by casual riders", subtitle = "Seven out of ten riders used the classic bike on rides over the last twelve months",
+        x = "Types of bikes", y = "") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 22, color = "#42a0ab", face = "bold"), 
+        plot.subtitle = element_text(size = 16, color = "grey20", face = "bold"), 
+        plot.caption = element_text(size = 8, color = "grey35"),
+        axis.text.x = element_text(size = 14, color = "grey20", face = "bold"),
+        axis.text.y = element_blank(),
+        axis.title.x = element_text(size = 15, color = "#42a0ab", face = "bold"), 
+        axis.title.y = element_blank(),
+        legend.position = "none")
+No description has been provided for this image
+# Chunk 2
+options(repr.plot.width = 10, repr.plot.height = 6)
+
+ggplot(casual_member_biketype_used, aes(x = bike, y = percent_casual, fill = percent_casual)) + 
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = scales::percent(percent_casual)), vjust = 2, size = 8, fontface = "bold", color = "grey20") + 
+  scale_fill_gradient(high = "#42a0ab", low = "#91d8e0") +
+  labs(title = "Percentage of bike-used by casual riders", subtitle = "Casual riders majority pick the classic bike for there ride",
+       x = "Types of bikes", y = "") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 22, color = "#42a0ab", face = "bold"), 
+        plot.subtitle = element_text(size = 16, color = "grey20", face = "bold"), 
+        plot.caption = element_text(size = 8, color = "grey35"),
+        axis.title.x = element_text(size = 15, color = "#42a0ab", face = "bold"),
+        axis.title.y = element_blank(),
+        axis.text.x = element_text(size = 14, color = "grey20", face = "bold"),
+        axis.text.y = element_blank(),
+        legend.position = "none")
+No description has been provided for this image
+# Chunk 3
+options(repr.plot.width = 8, repr.plot.height = 6)
+
+ggplot(riders_time_user, aes(x = user, y = avg_time, fill = avg_time)) +
+  geom_col(width = 0.8) + 
+  geom_text(aes(label = avg_time), vjust = 2, size = 8, color = "grey20", fontface = "bold") +
+  scale_fill_gradient(high = "#42a0ab", low = "#91d8e0") +
+  labs(title = "Average time spent by riders on bikes", subtitle = "Casual riders spend twice as long as members on average",
+        x = "User", y = "Time (mins)") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 22, color = "#42a0ab", face = "bold"), 
+        plot.subtitle = element_text(size = 14, color = "grey20", face = "bold"), 
+        plot.caption = element_text(size = 8, color = "grey35"),
+        axis.title.x = element_text(size = 15, color = "#42a0ab", face = "bold"), 
+        axis.title.y = element_text(size = 15, color = "#42a0ab", face = "bold"), 
+        axis.text.x = element_text(size = 14, color = "grey20", face = "bold"),
+        axis.text.y = element_blank(),
+        legend.position = "none")
+No description has been provided for this image
+# Chunk 4
+options(repr.plot.width = 8, repr.plot.height = 6)
+
+ggplot(riders_time_biketypes, aes(x = bike, y = avg_time, fill = avg_time)) +
+  geom_col() + 
+  geom_text(aes(label = avg_time), vjust = 2, size = 8, color = "grey20", fontface = "bold") +
+  scale_fill_gradient(high = "#42a0ab", low = "#91d8e0") +
+  facet_wrap(~user) +
+  labs(title = "Average time spent by riders on bikes", 
+       subtitle = "Both casual and members ride the electric bike the farthest",
+       x = "Type of Bike", y = "Average time spent (mins)") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 22, color = "#42a0ab", face = "bold"), 
+        plot.subtitle = element_text(size = 16, color = "grey20", face = "bold"), 
+        plot.caption = element_text(size = 8, color = "grey35"),
+        axis.title.x = element_text(size = 15, color = "#42a0ab", face = "bold"), 
+        axis.text.x = element_text(size = 10, color = "grey20", face = "bold"))
+No description has been provided for this image
+# Chunk 8
+options(repr.plot.width = 12, repr.plot.height = 8)
+options(scipen=999)
+
+ggplot(dayofweek, aes(day_of_week, numberofrides, fill = user, group = user)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = c("#91d8e0", "#42a0ab"), name = "Types of riders", breaks = c("casual", "member"), labels = c("Casual Member", "Annual Member")) +
+  labs(title = "Day of the Week Riders", subtitle = "Rides happened the most during the weekend",
+       
+       x = "Day of Week", y = "Number of Rides") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 22, color = "#42a0ab", face = "bold"), 
+        plot.subtitle = element_text(size = 14, color = "grey20", face = "bold"), 
+        plot.caption = element_text(size = 8, color = "grey35"),
+        legend.title = element_text(size = 16, face = "bold", color = "#42a0ab"),
+        legend.text = element_text(size = 14, color = "grey20"),
+        axis.title.x = element_text(size = 15, color = "#42a0ab", face = "bold"), 
+        axis.title.y = element_text(size = 15, color = "#42a0ab", face = "bold"),
+        axis.text.x = element_text(size = 10, color = "grey20", face = "bold"),
+        axis.text.y = element_text(size = 10, color = "grey20", face = "bold"))
+No description has been provided for this image
+# Chunk 9
+options(repr.plot.width = 12, repr.plot.height = 8)
+options(scipen=999)
+
+ggplot(month, aes(month, numberofrides, fill = user, group = user)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = c("#91d8e0", "#42a0ab"), name = "Types of riders", breaks = c("casual", "member"), labels = c("Casual Member", "Annual Member")) +
+  labs(title = "Monthly Rides",
+        subtitle = "The summer months have the most number of rides",
+       x = "Month", y = "Number of Rides") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 22, color = "#42a0ab", face = "bold"), 
+        plot.subtitle = element_text(size = 14, color = "grey20", face = "bold"), 
+        plot.caption = element_text(size = 8, color = "grey35"),
+        legend.title = element_text(size = 16, face = "bold", color = "#42a0ab"),
+        legend.text = element_text(size = 14, color = "grey20"),
+        axis.title.x = element_text(size = 15, color = "#42a0ab", face = "bold"), 
+        axis.title.y = element_text(size = 15, color = "#42a0ab", face = "bold"),
+        axis.text.x = element_text(size = 10, color = "grey20", face = "bold"),
+        axis.text.y = element_text(size = 10, color = "grey20", face = "bold"))
 
 
