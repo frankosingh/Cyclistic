@@ -39,7 +39,27 @@ Results of Statistics applied:
 This was the overall analysis of the data.
 
 
-The second part of the analysis that i did was by grouping the type of customers. The casuals and members and figuring out some statistics.
+The second part of the analysis that I did was by grouping the type of customers. The casuals and members and figuring out relationships:
+
+![image](https://github.com/frankosingh/Cyclistic/assets/85480636/68b28731-639b-494a-85ac-050f63f8e27b)
 
 
-    
+![image](https://github.com/frankosingh/Cyclistic/assets/85480636/165f9e63-3d9b-41f0-a09b-49edef7a1322)
+
+
+
+![image](https://github.com/frankosingh/Cyclistic/assets/85480636/4f9da1cf-7cc2-433c-9e3e-d4008844b775)
+
+
+![image](https://github.com/frankosingh/Cyclistic/assets/85480636/6f3b32ec-8c72-420b-b4c6-54630be8654d)
+
+
+![image](https://github.com/frankosingh/Cyclistic/assets/85480636/0b2be71e-59f8-42a2-911a-0a2ac1ac7523)
+
+
+![image](https://github.com/frankosingh/Cyclistic/assets/85480636/41f97021-955b-4842-8285-ad96faad8692)
+
+
+![image](https://github.com/frankosingh/Cyclistic/assets/85480636/1af7abd2-8a7c-4424-885b-8b20a655e524)
+
+
